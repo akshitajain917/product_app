@@ -19,10 +19,11 @@ from django.contrib import messages
 from .models import Product, ProductColor
 import pandas as pd
 
-
+# Default home page for all users of website
 def home(request):
     return render(request,"index.html")
 
+# Homepage for login users
 @login_required
 def homepage(request):
     return render(request,'homepage.html')
@@ -31,6 +32,7 @@ def logout_view(request):
     logout(request)
     return redirect('home')
 
+# This view will provide a signup form for the user
 class UserRegistrationView(FormView):
     form_class = RegistrationForm
     template_name = "signup.html"
@@ -39,9 +41,11 @@ class UserRegistrationView(FormView):
     def form_valid(self,form):
         user = form.save()
         if user is not None:
+            # once the form data is validated, we display message on login page and redirect to it
             messages.success(self.request, "Registered successfully!")
             return super(UserRegistrationView,self).form_valid(form)
 
+# This view will enable user to login
 class UserLoginView(FormView):
     form_class = LoginForm
     template_name = "login.html"
@@ -49,6 +53,7 @@ class UserLoginView(FormView):
     success_url = reverse_lazy('homepage')
     def form_valid(self,form):
         username_email_field = form.cleaned_data["username_or_email"] 
+        # checks if user exists else user has to signup and then login
         try:
             user = User.objects.get(username=username_email_field)
         except:
@@ -57,10 +62,13 @@ class UserLoginView(FormView):
             except:
                 return render(self.request, self.template_name, {'result': f"{username_email_field} doesn't exist. Please signup","form":form})
         if user is not None:
+            # once the form data is validated, we display message on website's homepage and redirect to homepage for login users
+            # this enables to create session for user 
             form = login(self.request, user)
             messages.success(self.request, "Login successfully!")
             return super(UserLoginView,self).form_valid(form)
 
+# This view enables user to update password if it's username or email exists
 class UpdatePasswordView(FormView):
     form_class = UpdatePasswordForm
     template_name = "update_password.html"
@@ -78,6 +86,7 @@ class UpdatePasswordView(FormView):
             except:
                 return render(self.request, self.template_name, {'result': f"{email} doesn't exist. Please signup","form":form})
         
+        # validating password 
         if len(new_password) < 6 :
             return render(self.request, self.template_name, {'result': "Password length should be greater than 6","form":form})
 
@@ -87,9 +96,11 @@ class UpdatePasswordView(FormView):
         user.password = new_password
         user.save()
         if user is not None:
+            # once the form data is validated, we display message on website's default homepage where user can login.
             messages.success(self.request, "Passsword updated successfully!")
             return super(UpdatePasswordView,self).form_valid(form)
 
+# class-based View to create a product
 class CreateProduct(PermissionRequiredMixin,CreateView):
     model = Product 
     template_name = "add_product.html"
@@ -102,16 +113,19 @@ class CreateProduct(PermissionRequiredMixin,CreateView):
         messages.success(self.request, "Added product successfully.")
         return super(CreateProduct,self).form_valid(form)
 
+# class-based View to list down all products
 class GetAllProducts(PermissionRequiredMixin,ListView):
     template_name = "view_all_products.html"
     model = Product
     permission_required = ('user_profile.view_product',)
 
+# class-based View to get details of a product
 class GetProduct(PermissionRequiredMixin,DetailView):
     template_name = "view_product.html"
     model = Product
     permission_required = ('user_profile.view_product',)
 
+# class-based View to update details of a product
 class UpdateProduct(PermissionRequiredMixin,UpdateView):
     template_name = "update_product.html"
     model = Product
@@ -119,12 +133,14 @@ class UpdateProduct(PermissionRequiredMixin,UpdateView):
     success_url =reverse_lazy('view_all')
     permission_required = ('user_profile.change_product',)
 
+# class-based View to delete details of a product
 class DeleteProduct(PermissionRequiredMixin,DeleteView):
     template_name = "delete_product.html"
     model = Product
     success_url = reverse_lazy('view_all')
     permission_required = ('user_profile.delete_product',)
 
+# provided a feature to add multiple products by uploading CSV file
 class SheetUpload(FormView):
     template_name = "upload_product_sheet.html"
     form_class = ProductUploadForm

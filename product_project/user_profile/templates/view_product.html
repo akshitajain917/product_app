@@ -1,0 +1,42 @@
+{% load random %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        ul {
+            padding: 0;
+            list-style: none;
+            background: #f2f2f2;
+        }
+        ul li {
+            display: block;
+            padding: 6px 25px;
+            color: #333;
+            text-decoration: none;
+        }
+    </style>
+    <title>Product App</title>
+</head>
+<body align="center">
+    <h1>My Product application</h1>
+    <h2>Product Details</h2>
+    <ul>
+        <li><b>Product Name :</b> {{ object.name }}</li>
+        <li><b>Price : </b>{{ object.price }}</li>
+        <li><b>Discounted Price :</b> {{ object.discount_price }}</li>
+        <li><b>Fabric Type :</b> {{ object.fabric_type }}</li>
+        <li><b>Description :</b> {{ object.description }}</li>
+        <li><b>Size :</b> {{ object.size }}</li>
+        <li><b>Color :</b> {{ object.color_choice.color }}</li>
+        {% if perms.user_profile.change_product %}
+        <button><a href="{% url "update" object.pk %}">Update</a></button>
+        {% endif %}
+        {% if perms.user_profile.delete_product %}  
+        <button><a href="{% url "delete" object.pk %}">Delete</a></button>
+        {% endif %}
+    </ul>
+    <p><button><a href="{% url "view_all" %}">View all products</a></button></p>
+</body> 
+</html>
+
+

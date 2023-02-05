@@ -1,0 +1,43 @@
+{% load random %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        ul {
+            padding: 0;
+            list-style: none;
+            background: #f2f2f2;
+        }
+        ul li {
+            display: block;
+            padding: 6px 25px;
+            color: #333;
+            text-decoration: none;
+        }
+    </style>
+    <title>Product App</title>
+</head>
+<body align="center">
+    <h1>My Product application</h1>
+    <ul>
+        {% for item in object_list %}
+        <li><b>Product Name :</b> {{ item.name }}</li>
+        <li><b>Price : </b>{{ item.price }}</li>
+        <li><b>Discounted Price :</b> {{ item.discount_price }}</li>
+        <li><b>Fabric Type :</b> {{ item.fabric_type }}</li>
+        <li><b>Description :</b> {{ item.description }}</li>
+        <li><b>Size :</b> {{ item.size }}</li>
+        <li><b>Color :</b> {{ item.color_choice.color }}</li>
+        {% if perms.user_profile.view_product %}
+        <button><a href="{% url "view_product" item.pk %}">View</a></button>
+        {% endif %}
+        <hr/>
+        {% empty %}
+        <li>No objects yet.</li>
+        {% endfor %}
+    </ul>
+    <p><button><a href="{% url "homepage" %}">Return to homepage</a></button></p>
+</body> 
+</html>
+
+

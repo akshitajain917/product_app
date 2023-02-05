@@ -67,7 +67,7 @@ class User(AbstractBaseUser,PermissionsMixin):
         (RETAILER, 'Retailer'),
         (CUSTOMER, 'Customer'),
     )
-    user_type = models.PositiveSmallIntegerField(choices=USER_TYPE_CHOICES, blank=True, null=True)
+    user_type = models.PositiveSmallIntegerField(choices=USER_TYPE_CHOICES, blank=False)
 
     username = models.CharField(
         _("username"),

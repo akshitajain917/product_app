@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Product App</title>
+</head>
+<body align="center">
+    <h1>My Product application</h1>
+    <h2>Add Products</h2>
+    {% if perms.user_profile.view_product %}
+    <form method="post" enctype='multipart/form-data'>
+        {% csrf_token %}
+        {{form.as_p}}
+        <input type="submit" value="Add Products">
+    </form> 
+    {% endif %}
+    <br>
+    <p><button><a href="{% url "homepage" %}">Return to homepage</a></button></p>
+</body> 
+</html>
+
+

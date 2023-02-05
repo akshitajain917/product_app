@@ -43,9 +43,16 @@
     </div>
     <h2> Welcome {{ user.first_name | title }} !</h2>
     <ul>
-        <li><a href="{% url "add" %}">Add Products</a></li>
-        <li><a href="add">View Products</a></li>
-        <li style="float:right"><a href="">Logout</a></li>
+      {% if perms.user_profile.add_product %}
+      <li><a href="{% url "add" %}">Add Products</a></li>
+      {% endif %}
+      {% if perms.user_profile.add_product %}
+      <li><a href="{% url "add_via_excel" %}">Add Products Via Excel</a></li>
+      {% endif %}
+      {% if perms.user_profile.view_product %}
+      <li><a href="{% url "view_all" %}">View Products</a></li>
+      {% endif %}
+      <li style="float:right"><a href="{% url "logout" %}">Logout</a></li>
     </ul>
 </body> 
 </html>

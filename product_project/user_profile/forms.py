@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import Group
 from accounts.models import User
-import random
+from django.core.validators import FileExtensionValidator
 
 class RegistrationForm(UserCreationForm):
 
@@ -60,5 +60,7 @@ class UpdatePasswordForm(forms.Form):
         widgets = {
             'email': forms.TextInput(attrs={'autocomplete': 'off'}),
         }
-
-    
+class ProductUploadForm(forms.Form):
+    file = forms.FileField(
+        max_length=40, validators=[FileExtensionValidator(allowed_extensions=["csv"])]
+    )

@@ -4,18 +4,32 @@ from django.urls import reverse_lazy
 from accounts.models import User
 from django.contrib.auth import login
 from django.views.generic.edit import FormView
-from user_profile.forms import RegistrationForm,LoginForm,UpdatePasswordForm
+from django.core.files.storage import FileSystemStorage
+from user_profile.constants import UPLOAD_PATH
+from django.contrib.auth import logout
+from user_profile.forms import ProductUploadForm, RegistrationForm,LoginForm,UpdatePasswordForm
+from django.contrib.auth.decorators import user_passes_test,login_required
+from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import redirect, render
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView,UpdateView,DeleteView
+from django.views.generic.detail import DetailView
+from django.views.generic.list import ListView
 from django.contrib import messages
-from .models import Product
+from .models import Product, ProductColor
+import pandas as pd
 
 
 def home(request):
     return render(request,"index.html")
 
+@login_required
 def homepage(request):
     return render(request,'homepage.html')
+
+def logout_view(request):
+    logout(request)
+    return redirect('home')
 
 class UserRegistrationView(FormView):
     form_class = RegistrationForm
@@ -76,17 +90,86 @@ class UpdatePasswordView(FormView):
             messages.success(self.request, "Passsword updated successfully!")
             return super(UpdatePasswordView,self).form_valid(form)
 
-
-class CreateProduct(CreateView):
+#@user_passes_test(add_product)
+#@permission_required('user_profile.add_product',raise_exception=True)
+class CreateProduct(PermissionRequiredMixin,CreateView):
     model = Product 
     template_name = "add_product.html"
     fields = ['name', 'price', 'discount_price','fabric_type', 'color_choice','size','description',]
     success_url = reverse_lazy('homepage')
+    permission_required = ('user_profile.add_product',)
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        messages.success(self.request, "The task was created successfully.")
-        return super(TaskCreate,self).form_valid(form)
-    
+        messages.success(self.request, "Added product successfully.")
+        return super(CreateProduct,self).form_valid(form)
+
+class GetAllProducts(PermissionRequiredMixin,ListView):
+    template_name = "view_all_products.html"
+    model = Product
+    permission_required = ('user_profile.view_product',)
+
+class GetProduct(PermissionRequiredMixin,DetailView):
+    template_name = "view_product.html"
+    model = Product
+    permission_required = ('user_profile.view_product',)
+
+class UpdateProduct(PermissionRequiredMixin,UpdateView):
+    template_name = "update_product.html"
+    model = Product
+    fields = '__all__'
+    success_url =reverse_lazy('view_all')
+    permission_required = ('user_profile.change_product',)
+
+class DeleteProduct(PermissionRequiredMixin,DeleteView):
+    template_name = "delete_product.html"
+    model = Product
+    success_url = reverse_lazy('view_all')
+    permission_required = ('user_profile.delete_product',)
+
+class SheetUpload(FormView):
+    template_name = "upload_product_sheet.html"
+    form_class = ProductUploadForm
+    success_url = reverse_lazy('homepage')
+
+    def form_valid(self, form):
+        try:
+            product_list = []
+            file_name = form.files["file"]
+            file_path = FileSystemStorage(location=UPLOAD_PATH)
+            filename = file_path.save(file_name.name, file_name)
+            product_file_path = UPLOAD_PATH + filename
+            product_df = pd.read_csv(product_file_path)
+            for index, row in product_df.iterrows():
+                user = User.objects.get(email=self.request.user.email)
+                try:
+                    color = ProductColor.objects.get(color__icontains=row["Color"])
+                except:
+                    ProductColor.objects.create(color=row["Color"])
+                    color = ProductColor.objects.get(color=color)
+                try:
+                    price = float(row["Price"])
+                    discounted_price = float(row["Discount Price"])
+                except:
+                    print("Prices are not in proper format.")
+                    continue
+                product_list.append(Product(
+                    user = user,
+                    name=row["Name"],
+                    price=price,
+                    discount_price=discounted_price,
+                    fabric_type=row["Fabric"],
+                    description = row["Description"],
+                    size = row["Size"],
+                    color_choice=color,
+                ))
+            Product.objects.bulk_create(product_list)
+            messages.success(self.request, "Added products successfully.")
+            return super(SheetUpload,self).form_valid(form)
+
+        except Exception as ex:
+            return render(self.request, self.template_name, {"result":f"Can't read file properly due to {ex}. Correct it and try to upload again"})
+
+
 
         

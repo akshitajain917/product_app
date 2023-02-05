@@ -29,7 +29,7 @@ class UserLoginView(FormView):
     def form_valid(self,form):
         username_email_field = form.cleaned_data["username_or_email"] 
         try:
-            user = User.objects.get(email=username_email_field)
+            user = User.objects.get(username=username_email_field)
         except:
             try:
                 user = User.objects.get(email=username_email_field)

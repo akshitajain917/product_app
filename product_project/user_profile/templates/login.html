@@ -19,12 +19,17 @@
 </head>
 <body align="center">
     <h1>My Product application</h1>
+    <div>
+        {% if messages %}
+            {% for message in messages %}
+                <h2 style="background-color:green; color:white;"> {{ message }} </h2>
+            {% endfor %}
+        {% endif %}
+    </div>
     <h2> Login </h2>
-
     <p>Enter OTP <span style="color:green;"><b>{% random_int 1 100000%}</b></span> to login</p>
-
-    {% if message %}
-        <p style="color:red;">{{message}}</p>
+    {% if result %}
+        <p style="color:red;">{{result}}</p>
     {% endif %}
     <form method="post">
         {% csrf_token %}

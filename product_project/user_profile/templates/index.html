@@ -9,6 +9,13 @@
     <h1>My Product application</h1>
     <p> Welcome to the Our site</p>
     <div>
+        {% if messages %}
+            {% for message in messages %}
+                <h2 style="background-color:green; color:white;"> {{ message }} </h2>
+            {% endfor %}
+        {% endif %}
+    </div>
+    <div>
         <button><a href="{% url "register" %}">Sign Up</a></button> 
         <button><a href="{% url "login" %}">Login</button>
         <button><a href="{% url "update_password" %}">Update Password</button>

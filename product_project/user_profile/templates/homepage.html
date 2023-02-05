@@ -2,11 +2,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <style>
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #333;
+          }
+          
+          li {
+            float: left;
+          }
+          
+          li a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+          }
+          
+          li a:hover:not(.active) {
+            background-color: #111;
+          }
+          
+
+          
+    </style>
     <title>Product App</title>
 </head>
 <body align="center">
     <h1>My Product application</h1>
-    <h2> Welcome {{ user.first_name | title }} </h2>
+    <div>
+      {% if messages %}
+          {% for message in messages %}
+              <h2 style="background-color:green; color:white;"> {{ message }} </h2>
+          {% endfor %}
+      {% endif %}
+    </div>
+    <h2> Welcome {{ user.first_name | title }} !</h2>
+    <ul>
+        <li><a href="{% url "add" %}">Add Products</a></li>
+        <li><a href="add">View Products</a></li>
+        <li style="float:right"><a href="">Logout</a></li>
+    </ul>
 </body> 
 </html>
 

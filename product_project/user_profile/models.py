@@ -2,44 +2,44 @@ from django.db import models
 from django.conf import settings
 
 class Fabric(object):
-    CHIFFON = "chiffon"
-    COTTON = "cotton"
-    SILK = "silk"
-    VELVET = "velvet"
-    SYNTHETIC = "synthetic"
-    CREPE = "pending"
-    DENIM = "denim"
-    LEATHER = "denim"
-    LINEN = "linen"
-    SATIN = "satin"
+    CHIFFON = "Chiffon"
+    COTTON = "Cotton"
+    SILK = "Silk"
+    VELVET = "Velvet"
+    SYNTHETIC = "Synthetic"
+    CREPE = "Crepe"
+    DENIM = "Denim"
+    LEATHER = "Leather"
+    LINEN = "Linen"
+    SATIN = "Satin"
     
 class Size(object):
-    XS = "extra_small"
-    S = "small"
-    M = "medium"
-    L = "large"
-    XL = "extra large"
+    XS = "XS"
+    S = "S"
+    M = "M"
+    L = "L"
+    XL = "XL"
 
 class Product(models.Model):
     FABRIC_CHOICE = (
-        (Fabric.CHIFFON, "chiffon"),
-        (Fabric.COTTON, "cotton"),
-        (Fabric.SILK, "silk"),
-        (Fabric.VELVET, "velvet"),
-        (Fabric.SYNTHETIC, "synthetic"),
-        (Fabric.CREPE, "pending"),
-        (Fabric.DENIM, "denim"),
-        (Fabric.LEATHER, "denim"),
-        (Fabric.LINEN, "linen"),
-        (Fabric.SATIN, "satin"),
+        (Fabric.CHIFFON, "Chiffon"),
+        (Fabric.COTTON, "Cotton"),
+        (Fabric.SILK, "Silk"),
+        (Fabric.VELVET, "Velvet"),
+        (Fabric.SYNTHETIC, "Synthetic"),
+        (Fabric.CREPE, "Crepe"),
+        (Fabric.DENIM, "Denim"),
+        (Fabric.LEATHER, "Leather"),
+        (Fabric.LINEN, "Linen"),
+        (Fabric.SATIN, "Satin"),
     )
 
     SIZE_CHOICES =(
-        (Size.XS,"extra_small"),
-        (Size.S, "small"),
-        (Size.M, "medium"),
-        (Size.L, "large"),
-        (Size.XL, "extra large")
+        (Size.XS,"XS"),
+        (Size.S, "S"),
+        (Size.M, "M"),
+        (Size.L, "L"),
+        (Size.XL, "XL")
     )
     user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
     name =  models.CharField(max_length=100, null=False,help_text="Product Name")

@@ -90,8 +90,6 @@ class UpdatePasswordView(FormView):
             messages.success(self.request, "Passsword updated successfully!")
             return super(UpdatePasswordView,self).form_valid(form)
 
-#@user_passes_test(add_product)
-#@permission_required('user_profile.add_product',raise_exception=True)
 class CreateProduct(PermissionRequiredMixin,CreateView):
     model = Product 
     template_name = "add_product.html"

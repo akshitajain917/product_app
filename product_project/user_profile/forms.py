@@ -24,7 +24,6 @@ class RegistrationForm(UserCreationForm):
 
     def save(self, commit=True):
         obj = super(RegistrationForm,self).save(commit=False)
-        import ipdb; ipdb.set_trace()
         if commit:
             obj.save()
             user_type = int(self.cleaned_data["user_type"])

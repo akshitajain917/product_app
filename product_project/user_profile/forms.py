@@ -6,9 +6,9 @@ import random
 class RegistrationForm(UserCreationForm):
 
     USER_CHOICES= [
-        ('is_superuser', 'Distributor'),
-        ('is_staff', 'Retailer'),
-        ('is_customer', 'Customer'),
+        ('Distributor', 'Distributor'),
+        ('Retailer', 'Retailer'),
+        ('Customer', 'Customer'),
     ]
     email = forms.EmailField(max_length=254,required=True)
     password1 = forms.CharField(label='Enter password',widget=forms.PasswordInput)
@@ -21,21 +21,20 @@ class RegistrationForm(UserCreationForm):
         for fieldname in ['username', 'password1','password2']:
             self.fields[fieldname].help_text = None
 
-    def save(self, commit=True):
-        obj = super(RegistrationForm,self).save(commit=False)
-        user_type = self.cleaned_data["user_type"]
-        if user_type == 'is_superuser':
-            obj.is_superuser = obj.is_staff = obj.is_customer = True
-        elif user_type == 'is_staff':
-            obj.is_staff = obj.is_customer =  True
-            obj.is_superuser  = False
-        else:
-            obj.is_superuser = obj.is_staff = False
-            obj.is_customer = True
-        obj.login_otp = random.randint(1,100000)
-        if commit:
-            obj.save()
-        return obj
+    # def save(self, commit=True):
+    #     obj = super(RegistrationForm,self).save(commit=False)
+    #     user_type = self.cleaned_data["user_type"]
+    #     if user_type == User.DISTRIBUTOR:
+    #         obj.is_superuser = obj.is_staff = obj.is_customer = 
+    #     elif user_type == 'is_staff':
+    #         obj.is_staff = obj.is_customer =  True
+    #         obj.is_superuser  = False
+    #     else:
+    #         obj.is_superuser = obj.is_staff = False
+    #         obj.is_customer = True
+    #     if commit:
+    #         obj.save()
+    #     return obj
 
     class Meta:
         model = User

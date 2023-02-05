@@ -13,15 +13,15 @@ class MyUserManager(BaseUserManager):
         return full_name.strip()
 
     # Generic function for creating multiple users
-    def _create_user(self, username, email, password, is_staff, is_superuser, **extra_fields):
+    def _create_user(self, username, email, password,is_staff, is_superuser, **extra_fields):
         if not email:
             raise ValueError("Email must be set for the user")
         email = self.normalize_email(email)
         user = self.model(
             username= username, 
             email=email,
-            is_staff=is_staff,
-            is_superuser=is_superuser,
+            is_staff = is_staff,
+            is_superuser = is_superuser,
             **extra_fields
         )
         user.set_password(password)
@@ -32,11 +32,7 @@ class MyUserManager(BaseUserManager):
         '''
         Differentiating multiple users by is_customer and is_retailer flag
         '''
-        is_customer = extra_fields.pop("is_customer", False)
-        if is_customer:
-            is_staff, is_superuser = False, False
-        else:
-            is_staff, is_superuser = True, False
+        is_staff, is_superuser = False, False
         return self._create_user(username,email,password, is_staff, is_superuser, **extra_fields)
 
     def create_superuser(self, username, email, password, **extra_fields):
@@ -58,9 +54,21 @@ class MyUserManager(BaseUserManager):
 
     def get_by_natural_key(self, username):
         return self.get(username=username)
+    
 
 class User(AbstractBaseUser,PermissionsMixin):
     username_validator = ASCIIUsernameValidator()
+    DISTRIBUTOR = 1
+    RETAILER = 2
+    CUSTOMER = 3
+    
+    USER_TYPE_CHOICES = (
+        (DISTRIBUTOR, 'Distributor'),
+        (RETAILER, 'Retailer'),
+        (CUSTOMER, 'Customer'),
+    )
+    user_type = models.PositiveSmallIntegerField(choices=USER_TYPE_CHOICES, blank=True, null=True)
+
     username = models.CharField(
         _("username"),
         max_length=150,
@@ -80,11 +88,8 @@ class User(AbstractBaseUser,PermissionsMixin):
             "unique": _("A user with that email address already exists."),
         },
     ) 
-    is_staff = models.BooleanField(_("staff status"),default=False)
-    is_superuser = models.BooleanField(_("superuser status"),default=False)
-    is_customer = models.BooleanField(_("customer status"),default=False)
-
-    
+    is_superuser = models.BooleanField(_("Superuser Status"),default=False)
+    is_staff =  models.BooleanField(_("Staff Status"),default=False)
 
     objects = MyUserManager()
 

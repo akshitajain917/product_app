@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import Group
 from accounts.models import User
 import random
 
@@ -20,6 +21,24 @@ class RegistrationForm(UserCreationForm):
 
         for fieldname in ['username', 'password1','password2']:
             self.fields[fieldname].help_text = None
+
+    def save(self, commit=True):
+        obj = super(RegistrationForm,self).save(commit=False)
+        import ipdb; ipdb.set_trace()
+        if commit:
+            obj.save()
+            user_type = int(self.cleaned_data["user_type"])
+            if user_type == User.DISTRIBUTOR:
+                distributor_group, _ = Group.objects.get_or_create(name='Distributor')
+                distributor_group.user_set.add(obj)
+            elif user_type == User.RETAILER:
+                retailer_group, _ = Group.objects.get_or_create(name='Retailer')
+                retailer_group.user_set.add(obj)
+            else:
+                customer_group, _ = Group.objects.get_or_create(name='Customer')
+                customer_group.user_set.add(obj)
+        return obj
+
     class Meta:
         model = User
         fields = ('user_type','username','first_name','last_name','email', 'password1','password2')

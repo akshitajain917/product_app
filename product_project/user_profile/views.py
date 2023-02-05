@@ -68,7 +68,6 @@ class UpdatePasswordView(FormView):
             return redirect('home')
 
 def homepage(request):
-    print(request.user.is_authenticated)
     return render(request,'homepage.html',{})
 
 
